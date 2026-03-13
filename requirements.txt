@@ -1,13 +1,12 @@
 streamlit
-tensorflow
+tensorflow==2.15.0
 numpy
 pandas
 scikit-learn
-gensim
 nltk
 yfinance
+beautifulsoup4
+gensim
+statsmodels
 lime
 shap
-beautifulsoup4
-lxml
-statsmodels
