@@ -1,0 +1,13 @@
+streamlit
+tensorflow
+numpy
+pandas
+scikit-learn
+gensim
+nltk
+yfinance
+lime
+shap
+beautifulsoup4
+lxml
+statsmodels
