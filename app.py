@@ -3,53 +3,61 @@ import pickle
 import numpy as np
 import tensorflow as tf
 import os
+import sys
 import nltk
 
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from utils import clean_text, get_latest_market_window
 
+# ------------------------------------------------
+# Fix keras / tf.keras pickle compatibility
+# ------------------------------------------------
+import tensorflow.keras as keras
+sys.modules['keras'] = keras
+
+# ------------------------------------------------
+# NLTK setup
+# ------------------------------------------------
 nltk.download("punkt")
 nltk.download("stopwords")
 
 st.title("Financial Market Intelligence AI")
 
-# ---------------------------------------
-# Base directory (ensures Streamlit finds files)
-# ---------------------------------------
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# ---------------------------------------
-# Load model and assets
-# ---------------------------------------
+# ------------------------------------------------
+# Load model + assets
+# ------------------------------------------------
 @st.cache_resource
 def load_assets():
 
-    model = tf.keras.models.load_model(
-        os.path.join(BASE_DIR, "market_model_saved")
-    )
+    model_path = os.path.join(BASE_DIR, "market_model_saved")
 
-    tokenizer = pickle.load(open(
-        os.path.join(BASE_DIR, "tokenizer.pkl"), "rb"))
+    tokenizer_path = os.path.join(BASE_DIR, "tokenizer.pkl")
+    lda_path = os.path.join(BASE_DIR, "lda_model.pkl")
+    vec_path = os.path.join(BASE_DIR, "lda_vectorizer.pkl")
 
-    lda = pickle.load(open(
-        os.path.join(BASE_DIR, "lda_model.pkl"), "rb"))
+    model = tf.keras.models.load_model(model_path)
 
-    vec = pickle.load(open(
-        os.path.join(BASE_DIR, "lda_vectorizer.pkl"), "rb"))
+    with open(tokenizer_path, "rb") as f:
+        tokenizer = pickle.load(f)
+
+    with open(lda_path, "rb") as f:
+        lda = pickle.load(f)
+
+    with open(vec_path, "rb") as f:
+        vec = pickle.load(f)
 
     return model, tokenizer, lda, vec
 
 
 model, tokenizer, lda, vec = load_assets()
 
-# ---------------------------------------
-# User input
-# ---------------------------------------
+# ------------------------------------------------
+# UI
+# ------------------------------------------------
 headline = st.text_input("Enter financial news headline")
 
-# ---------------------------------------
-# Prediction
-# ---------------------------------------
 if st.button("Predict Market"):
 
     cleaned = clean_text(headline)
