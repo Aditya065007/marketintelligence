@@ -1,27 +1,32 @@
 import streamlit as st
-import tensorflow as tf
 import pickle
 import numpy as np
-
+import tensorflow as tf
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from utils import clean_text, get_latest_market_window
+import nltk
+
+nltk.download("punkt")
+nltk.download("stopwords")
 
 st.title("Financial Market Intelligence AI")
 
 @st.cache_resource
 def load_assets():
 
-    model = tf.keras.models.load_model("model_assets/market_model.keras")
+    model = tf.keras.models.load_model("market_model_saved")
 
-    tokenizer = pickle.load(open("model_assets/tokenizer.pkl","rb"))
-    lda = pickle.load(open("model_assets/lda_model.pkl","rb"))
-    vec = pickle.load(open("model_assets/lda_vectorizer.pkl","rb"))
+    tokenizer = pickle.load(open("tokenizer.pkl","rb"))
+    lda = pickle.load(open("lda_model.pkl","rb"))
+    vec = pickle.load(open("lda_vectorizer.pkl","rb"))
 
     return model, tokenizer, lda, vec
+
 
 model, tokenizer, lda, vec = load_assets()
 
 headline = st.text_input("Enter financial news headline")
+
 
 if st.button("Predict Market"):
 
@@ -49,4 +54,5 @@ if st.button("Predict Market"):
 
     st.metric("Market Direction", direction)
     st.metric("Confidence", f"{prob:.2f}")
+
     st.metric("Predicted Price", f"${price:.2f}")
