@@ -1,23 +1,38 @@
 import re
 import numpy as np
 import yfinance as yf
+from sklearn.preprocessing import MinMaxScaler
 
+# -------------------------
+# TEXT CLEANING
+# -------------------------
 def clean_text(text):
 
     text = text.lower()
-    text = re.sub(r'<.*?>', ' ', text)
-    text = re.sub(r'http\S+', '', text)
-    text = re.sub(r'[^a-z\s]', '', text)
-    text = re.sub(r'\s+', ' ', text).strip()
+
+    text = re.sub(r"http\S+", "", text)
+    text = re.sub(r"[^a-z\s]", "", text)
+
+    text = re.sub(r"\s+", " ", text).strip()
 
     return text
 
 
-def get_latest_market_window(lookback=5):
+# -------------------------
+# FETCH LATEST MARKET WINDOW
+# -------------------------
+def get_latest_market_window():
 
-    df = yf.download("^GSPC", period="10d")
+    df = yf.download("^GSPC", period="10d", progress=False)
 
-    cols = ["Open","High","Low","Close","Volume"]
-    data = df[cols].values
+    df = df[["Open","High","Low","Close","Volume"]]
 
-    return np.expand_dims(data[-lookback:], axis=0)
+    scaler = MinMaxScaler()
+
+    scaled = scaler.fit_transform(df)
+
+    window = scaled[-5:]
+
+    window = np.expand_dims(window, axis=0)
+
+    return window
