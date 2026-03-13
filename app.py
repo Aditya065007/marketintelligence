@@ -13,10 +13,13 @@ from utils import clean_text, get_latest_market_window
 # Fix keras / tf.keras pickle compatibility
 # ------------------------------------------------
 import tensorflow.keras as keras
-sys.modules['keras'] = keras
+
+sys.modules["keras"] = keras
+sys.modules["keras.src"] = keras
+sys.modules["keras.src.legacy"] = keras
 
 # ------------------------------------------------
-# NLTK setup
+# NLTK
 # ------------------------------------------------
 nltk.download("punkt")
 nltk.download("stopwords")
@@ -26,7 +29,7 @@ st.title("Financial Market Intelligence AI")
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # ------------------------------------------------
-# Load model + assets
+# Load assets
 # ------------------------------------------------
 @st.cache_resource
 def load_assets():
